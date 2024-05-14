@@ -1,0 +1,71 @@
+{
+  "name": "pbc_registry",
+  "version": "1.0.0",
+  "description": "Digital Twin Registry Microfrontend",
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "build:start": "cd dist && npx serve",
+    "start": "webpack serve --open --mode development",
+    "start:live": "webpack serve --open --mode development --live-reload --hot",
+    "start:dev": "node local-develop.js && yarn start:live",
+    "lint": "eslint .",
+    "lint:fix": "prettier --log-level silent --write . && eslint --fix .",
+    "clean": "rimraf build/ node_modules/ public/ types/"
+  },
+  "author": {
+    "name": "Bruno Simões"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.3.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-runtime": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-react": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/simple-peer": "^9.11.8",
+    "autoprefixer": "^10.4.19",
+    "babel-loader": "^9.1.3",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "dts-loader": "^0.1.8",
+    "html-webpack-plugin": "^5.6.0",
+    "json-loader": "^0.5.7",
+    "postcss": "^8.4.38",
+    "postcss-loader": "^8.1.1",
+    "rimraf": "^5.0.7",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.3",
+    "tar-webpack-plugin": "^0.1.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@faker-js/faker": "^8.4.1",
+    "@mui/icons-material": "^5.15.19",
+    "@mui/material": "^5.15.19",
+    "@react-keycloak/web": "^3.4.0",
+    "axios": "^1.7.2",
+    "i18next": "^23.11.5",
+    "keycloak-js": "24.0.4",
+    "lodash": "^4.17.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1",
+    "reactflow": "^11.11.3",
+    "socket.io-client": "^4.7.5",
+    "zustand": "^4.5.2"
+  },
+  "resolutions": {
+    "rimraf": "^5.0.7"
+  }
+}

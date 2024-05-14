@@ -1,0 +1,137 @@
+[
+  {
+    "id": "a00c6eb8f90d132b",
+    "type": "tab",
+    "label": "HTTP API to Digital Twin API",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "a06833262ae4727d",
+    "type": "inject",
+    "z": "a00c6eb8f90d132b",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "5",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 170,
+    "y": 160,
+    "wires": [
+      [
+        "6738cd961bfd9777"
+      ]
+    ]
+  },
+  {
+    "id": "6738cd961bfd9777",
+    "type": "http request",
+    "z": "a00c6eb8f90d132b",
+    "name": "GET /config",
+    "method": "GET",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "http://digital-twin-proxy/registry/config",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [],
+    "x": 370,
+    "y": 160,
+    "wires": [
+      [
+        "25dfc018387fca66"
+      ]
+    ]
+  },
+  {
+    "id": "25dfc018387fca66",
+    "type": "function",
+    "z": "a00c6eb8f90d132b",
+    "name": "Transform Response",
+    "func": "let json = msg.payload;\nmsg.payload = { \"test\": \"1\" };\nreturn msg;",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 610,
+    "y": 160,
+    "wires": [
+      [
+        "3ac839adda13672f",
+        "9174cda821fccde2"
+      ]
+    ]
+  },
+  {
+    "id": "3ac839adda13672f",
+    "type": "http request",
+    "z": "a00c6eb8f90d132b",
+    "name": "POST /config",
+    "method": "POST",
+    "ret": "txt",
+    "paytoqs": "ignore",
+    "url": "http://digital-twin-proxy/registry/echo",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [],
+    "x": 870,
+    "y": 160,
+    "wires": [
+      [
+        "48f946d96567ad5a"
+      ]
+    ]
+  },
+  {
+    "id": "48f946d96567ad5a",
+    "type": "debug",
+    "z": "a00c6eb8f90d132b",
+    "name": "Debug",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1090,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "9174cda821fccde2",
+    "type": "debug",
+    "z": "a00c6eb8f90d132b",
+    "name": "Debug",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 870,
+    "y": 280,
+    "wires": []
+  }
+]

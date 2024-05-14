@@ -1,0 +1,10 @@
+FROM node:16-alpine3.17
+
+ARG MODULE
+ENV MODULE=${MODULE}
+
+WORKDIR /home/app/${MODULE}
+COPY ./Digital-Twin-Capabilities/Digital-Twin-${MODULE}/ .
+RUN yarn
+
+CMD ["yarn", "start"]

@@ -1,0 +1,13 @@
+{
+  "id": "pbcModule",
+  "label": "ReactJS-based micro-frontend",
+  "pathTemplate": "./src/index.html",
+  "routeCapabilities": "remote.js",
+  "devServerPort": 8091,
+  "pathTypescript": "public/types",
+  "pathPublicAssets": [],
+  "remotes": [],
+  "exposes": {
+    "./App": "./src/App.tsx"
+  }
+}

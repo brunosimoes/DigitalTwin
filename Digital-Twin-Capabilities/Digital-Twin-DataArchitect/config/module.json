@@ -1,0 +1,34 @@
+{
+  "id": "pbcDataArchitect",
+  "type": "otherservice",
+  "label": "Data Architect",
+  "rootDir": "./Digital-Twin-DataArchitect",
+  "enableProxy": true,
+  "proxyPath": "/data-architect",
+  "routeCapabilities": "",
+  "dockerHealthCheck": true,
+  "dockerContainer": "digital-twin-data-architect",
+  "dockerImage": "Dockerfile",
+  "dockerVolumes": [
+    {
+      "source": "node_data",
+      "target": "/data",
+      "create": true
+    }
+  ],
+  "dockerPorts": {
+    "1880": "1880"
+  },
+  "microservices": {
+    "node": {
+      "name": "NodeRED"
+    }
+  },
+  "servicesMap": {
+    "upstream": [
+      "pbcServices"
+    ],
+    "group": "integration"
+  },
+  "devServerPort": 1880
+}

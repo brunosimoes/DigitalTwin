@@ -1,0 +1,35 @@
+{
+  "id": "pbcDataRepository",
+  "type": "microservice",
+  "label": "Data Repository",
+  "rootDir": "./Digital-Twin-DataStore",
+  "enableProxy": true,
+  "proxyPath": "/data",
+  "dockerHealthCheckEndpoint": "/version",
+  "dockerContainer": "digital-twin-data-store",
+  "dockerImage": "Dockerfile.NodeJs",
+  "dockerVolumes": [
+    {
+      "source": "files_data",
+      "target": "/home/app/DataStore/static",
+      "create": true
+    },
+    {
+      "source": "config",
+      "target": "/home/app/DataStore/registry:ro",
+      "create": false
+    }
+  ],
+  "routeCapabilities": "/catalogue",
+  "routeLandingPage": "/",
+  "devServerPort": 3000,
+  "documentation": "DIGITAL_TWIN_DATA_REPOSITORY.md",
+  "servicesMap": {
+    "upstream": [
+      "pbcDataArchitect",
+      "pbcGeometryAPI",
+      "pbcServices"
+    ],
+    "group": "data-services"
+  }
+}

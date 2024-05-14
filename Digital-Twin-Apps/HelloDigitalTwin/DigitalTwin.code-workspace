@@ -1,0 +1,27 @@
+{
+  "folders": [
+    {
+      "path": ".",
+    },
+  ],
+  "settings": {
+    // Prevent editor formatting on save for certain file types
+    "editor.formatOnSave": false,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "[javascript]": {
+      "editor.formatOnSave": false,
+    },
+    "[typescript]": {
+      "editor.formatOnSave": false,
+    },
+    // Configure eslint to report + fix errors for correct file types
+    "editor.formatOnPaste": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": ["javascript", "typescript"],
+    "cSpell.words": ["Odometry", "Simões", "tailwindcss", "Vicomtech"],
+  },
+}

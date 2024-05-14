@@ -1,0 +1,158 @@
+{
+  "id": "pbcApp",
+  "type": "microfrontend",
+  "label": "Hello World",
+  "rootDir": "./Digital-Twin-Apps/HelloDigitalTwin",
+  "enableProxy": true,
+  "proxyPath": "/",
+  "dockerImage": "Dockerfile.ReactApp",
+  "dockerContainer": "digital-twin",
+  "servicesMap": {
+    "upstream": [
+      "keycloak",
+      "proxy"
+    ],
+    "group": "apps"
+  },
+  "pathTemplate": "./src/index.html",
+  "routeCapabilities": "/remote.js",
+  "devServerPort": 8071,
+  "pathTypescript": "public/types",
+  "pathPublicAssets": [
+    ".",
+    "public"
+  ],
+  "remotes": [
+    "pbcRegistry"
+  ],
+  "exposes": {
+    "./App": "./src/App.tsx"
+  },
+  "about": {
+    "suite": "Digital Twin",
+    "name": "Hello World",
+    "copyright": "@ Bruno Simões",
+    "description": "Hello word for the creation of a Digital Twin.",
+    "headers": {
+      "firstLogo": "/static/logos/logo.svg"
+    },
+    "about": [
+      "pbcServices",
+      "pbcUX"
+    ]
+  },
+  "appManifest": {
+    "version": "1.0",
+    "entrypoint": "digital_twin:8071",
+    "dockerRegistry": "brunosimoes/digital-twin:",
+    "authenticationMethods": [
+      "email"
+    ],
+    "groups": [
+      {
+        "id": "data-services",
+        "label": "Micro-Services",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "style": {
+          "backgroundColor": "#52AFBE40",
+          "width": 300,
+          "height": 700
+        }
+      },
+      {
+        "id": "integration",
+        "label": "Integration",
+        "position": {
+          "x": 310,
+          "y": 0
+        },
+        "style": {
+          "backgroundColor": "#CCDC5840",
+          "width": 300,
+          "height": 700
+        }
+      },
+      {
+        "id": "intelligence",
+        "label": "Intelligence",
+        "position": {
+          "x": 620,
+          "y": 0
+        },
+        "style": {
+          "backgroundColor": "#CCDC5840",
+          "width": 300,
+          "height": 700
+        }
+      },
+      {
+        "id": "ux",
+        "label": "UX",
+        "position": {
+          "x": 930,
+          "y": 0
+        },
+        "style": {
+          "backgroundColor": "#CCDC5840",
+          "width": 300,
+          "height": 700
+        }
+      },
+      {
+        "id": "apps",
+        "label": "Digital Twins",
+        "position": {
+          "x": 1240,
+          "y": 0
+        },
+        "style": {
+          "backgroundColor": "#CCDC5840",
+          "width": 300,
+          "height": 700
+        }
+      },
+      {
+        "id": "trustworthiness",
+        "label": "Trustworthiness",
+        "position": {
+          "x": 1550,
+          "y": 0
+        },
+        "style": {
+          "backgroundColor": "#52AFBE40",
+          "width": 300,
+          "height": 700
+        }
+      }
+    ],
+    "modules": [
+      {
+        "id": "keycloak",
+        "build": false
+      },
+      {
+        "id": "proxy",
+        "build": false
+      },
+      {
+        "id": "pbcRegistry",
+        "build": true
+      },
+      {
+        "id": "pbcDataArchitect",
+        "build": true
+      },
+      {
+        "id": "pbcDataRepository",
+        "build": true
+      },
+      {
+        "id": "pbcApp",
+        "build": true
+      }
+    ]
+  }
+}

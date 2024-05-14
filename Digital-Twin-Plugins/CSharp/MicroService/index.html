@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Micro-Service Gateway</title>
+    <script src="https://code.iconify.design/2/2.0.3/iconify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.get(location.href.replace("#", "") + "settings", function (data, status) {
+                if (status === "success") {
+                    $("#settings-json").text(JSON.stringify(JSON.parse(data), null, 2));
+                } else {
+                    alert("Failed to get system settings!");
+                }
+            });
+
+            $("#set-settings-form").submit(function (e) {
+                e.preventDefault();
+                var settings = $("#settings-textarea").val();
+                const url = location.href + "settings";
+                $.ajax({
+                    type: "POST",
+                    url,
+                    data: settings,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        alert("System settings updated successfully!");
+                    },
+                    error: function () {
+                        alert("Failed to update system settings!");
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+        }
+
+        nav {
+            background-color: #ccc;
+            text-align: center;
+        }
+
+            nav ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+            }
+
+            nav li {
+                margin: 0 10px;
+            }
+
+            nav a {
+                display: block;
+                padding: 10px;
+                text-decoration: none;
+                color: #333;
+            }
+
+                nav a:hover {
+                    background-color: #333;
+                    color: #fff;
+                }
+
+        main {
+            padding: 20px;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        pre {
+            background-color: #eee;
+            padding: 10px;
+            overflow: auto;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 2%;
+            border: 1px solid #888;
+            width: 90%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gateway Control Panel</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#" id="set-settings-link" title="Set Settings"><span class="iconify" data-icon="bi:gear-fill"></span></a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>System Settings</h2>
+        <p id="system-settings"></p>
+        <pre id="settings-json"></pre>
+        <div id="set-settings-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Set System Settings</h3>
+                <form id="set-settings-form">
+                    <textarea id="settings-textarea" name="settings" rows="20"></textarea>
+                    <br>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2023 Vicomtech</p>
+    </footer>
+    <script>
+        const setSettingsModal = document.getElementById("set-settings-modal");
+        const setSettingsLink = document.getElementById("set-settings-link");
+        const closeModal = document.getElementsByClassName("close")[0];
+        setSettingsLink.onclick = function () {
+            setSettingsModal.style.display = "block";
+        }
+
+        closeModal.onclick = function () {
+            setSettingsModal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target == setSettingsModal) {
+                setSettingsModal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>

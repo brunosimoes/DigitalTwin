@@ -1,0 +1,22 @@
+{
+  "id": "proxy",
+  "type": "otherservice",
+  "label": "Digital Twin Proxy",
+  "rootDir": "./Digital-Twin-Proxy",
+  "enableProxy": false,
+  "proxyPath": "",
+  "dockerContainer": "digital-twin-proxy",
+  "dockerHealthCheck": false,
+  "dockerVolumes": [
+    {
+      "source": "./proxy.conf",
+      "target": "/etc/nginx/conf.d/default.conf",
+      "create": false
+    }
+  ],
+  "documentation": "DIGITAL_TWIN_PROXY.md",
+  "servicesMap": {
+    "group": "trustworthiness"
+  },
+  "devServerPort": 80
+}

@@ -1,0 +1,35 @@
+FROM node:19-alpine as builder
+
+ARG MODULE
+ENV MODULE=${MODULE}
+
+ARG HOSTNAME
+ENV HOSTNAME=${HOSTNAME}
+
+# Set microfrontend location
+WORKDIR /home/app/${MODULE}
+
+# Copy microfrontend data and build it
+COPY ./Digital-Twin-Capabilities/Digital-Twin-${MODULE}/config ./config
+COPY ./Digital-Twin-Capabilities/Digital-Twin-${MODULE}/microfrontend ./microfrontend
+WORKDIR /home/app/${MODULE}/microfrontend
+RUN yarn
+RUN mkdir public
+RUN yarn build && cp -rf ./public/*-dts.tgz ./dist/
+
+FROM python:3.7
+
+ARG MODULE
+ENV MODULE=${MODULE}
+
+WORKDIR /usr/app
+
+COPY ./Digital-Twin-Capabilities/Digital-Twin-${MODULE}/requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY ./Digital-Twin-Capabilities/Digital-Twin-${MODULE}/microservice ./microservice
+COPY ./Digital-Twin-Capabilities/Digital-Twin-${MODULE}/*.py .
+
+COPY --from=builder /home/app/${MODULE}/microfrontend/dist /home/app/microservice/static
+
+CMD ["python", "run.py"]

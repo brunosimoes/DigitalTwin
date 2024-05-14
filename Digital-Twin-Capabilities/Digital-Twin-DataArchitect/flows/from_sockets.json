@@ -1,0 +1,194 @@
+[
+  {
+    "id": "bd52b5c25d8f30a1",
+    "type": "tab",
+    "label": "Update 3D Scene",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "24b6f94cccc26b16",
+    "type": "group",
+    "z": "bd52b5c25d8f30a1",
+    "name": "Digital Twin API",
+    "style": {
+      "label": true
+    },
+    "nodes": [
+      "c5cdeb4677820fe1",
+      "63c4b237a76c63c4",
+      "558356920703b729"
+    ],
+    "x": 94,
+    "y": 79,
+    "w": 732,
+    "h": 82
+  },
+  {
+    "id": "c5cdeb4677820fe1",
+    "type": "socketio-connector",
+    "z": "bd52b5c25d8f30a1",
+    "g": "24b6f94cccc26b16",
+    "server": "11556a9294886967",
+    "namespace": "",
+    "transport": "",
+    "name": "Digital Twin Real-time API",
+    "x": 230,
+    "y": 120,
+    "wires": [
+      [
+        "558356920703b729"
+      ]
+    ]
+  },
+  {
+    "id": "63c4b237a76c63c4",
+    "type": "debug",
+    "z": "bd52b5c25d8f30a1",
+    "g": "24b6f94cccc26b16",
+    "name": "Debug Events",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 700,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "558356920703b729",
+    "type": "socketio-listener",
+    "z": "bd52b5c25d8f30a1",
+    "g": "24b6f94cccc26b16",
+    "eventname": "gateway-out",
+    "name": "Gateway Events",
+    "x": 480,
+    "y": 120,
+    "wires": [
+      [
+        "63c4b237a76c63c4"
+      ]
+    ]
+  },
+  {
+    "id": "86d254943ad426d3",
+    "type": "inject",
+    "z": "bd52b5c25d8f30a1",
+    "name": "Send IK Event",
+    "props": [
+      {
+        "p": "connectionName",
+        "v": "Digital Twin Real-time API",
+        "vt": "str"
+      },
+      {
+        "p": "eventName",
+        "v": "gateway",
+        "vt": "str"
+      }
+    ],
+    "repeat": "1",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "x": 220,
+    "y": 300,
+    "wires": [
+      [
+        "f7bdd8732b75cc95"
+      ]
+    ]
+  },
+  {
+    "id": "fe96a0c6b7698fc4",
+    "type": "socketio-emitter",
+    "z": "bd52b5c25d8f30a1",
+    "name": "Digital Twin API Out",
+    "x": 690,
+    "y": 300,
+    "wires": []
+  },
+  {
+    "id": "f7bdd8732b75cc95",
+    "type": "function",
+    "z": "bd52b5c25d8f30a1",
+    "name": "Message",
+    "func": "msg.payload = { \n    \"topic\": \"MeshTransform\",\n    \"data\": {\n        \"rotation\": {\n            \"J1(-y)\": Math.random() * 180\n        }\n    }\n};\nreturn msg;",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 440,
+    "y": 300,
+    "wires": [
+      [
+        "fe96a0c6b7698fc4"
+      ]
+    ]
+  },
+  {
+    "id": "6d054cfa942e319a",
+    "type": "inject",
+    "z": "bd52b5c25d8f30a1",
+    "name": "Send Shopfloor Event",
+    "props": [
+      {
+        "p": "connectionName",
+        "v": "Digital Twin Real-time API",
+        "vt": "str"
+      },
+      {
+        "p": "eventName",
+        "v": "gateway",
+        "vt": "str"
+      }
+    ],
+    "repeat": "1",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "x": 230,
+    "y": 400,
+    "wires": [
+      [
+        "f482f2b0f3dc86b3"
+      ]
+    ]
+  },
+  {
+    "id": "f482f2b0f3dc86b3",
+    "type": "function",
+    "z": "bd52b5c25d8f30a1",
+    "name": "Message",
+    "func": "msg.payload = { \n    \"topic\": \"ShopfloorIoT\",\n    \"data\": {\n        \"linestation/6654ae53bd1e164bcb8e6ccf\": {\n            \"rotation\": {\n                x: 0,\n                y: Math.random() * 180,\n                z: 0\n            }\n        }\n    }\n};\nreturn msg;",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 440,
+    "y": 400,
+    "wires": [
+      [
+        "fe96a0c6b7698fc4"
+      ]
+    ]
+  },
+  {
+    "id": "11556a9294886967",
+    "type": "socketio-config",
+    "host": "ws://digital-twin-rest-db",
+    "port": "3101",
+    "path": "",
+    "reconnection": true
+  }
+]

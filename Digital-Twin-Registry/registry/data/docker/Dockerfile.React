@@ -1,0 +1,59 @@
+FROM node:20 as builder
+
+ARG CODENAME
+ENV CODENAME=${CODENAME}
+ARG MODULE
+ENV MODULE=${MODULE}
+ENV PROJECT=${MODULE:+./Digital-Twin-Capabilities/}Digital-Twin${MODULE:+-}$MODULE
+ENV MODULE=${MODULE:-App}
+
+ARG MAX_OLD_SPACE_SIZE=4096
+ENV NODE_OPTIONS=--max-old-space-size=${MAX_OLD_SPACE_SIZE}
+
+ARG HOSTNAME
+ENV HOSTNAME=${HOSTNAME}
+
+# Set microfrontend location
+WORKDIR /home/app/${MODULE}
+
+# Install microfrontend deps
+COPY ${PROJECT}/package.json .
+COPY ${PROJECT}/yarn.lock .
+RUN yarn
+
+# Copy microfrontend data
+COPY ${PROJECT}/ .
+
+# Copy the public data
+COPY ./Digital-Twin-Apps/${CODENAME}/public ./public
+COPY ./Digital-Twin-Apps/${CODENAME}/data/schema/endpoints/microservice/schema ./src/schema
+COPY ./Digital-Twin-Apps/${CODENAME}/data/schema.json ./config/
+
+# Consider also line breaks
+RUN sed -i 's/"Digital-Twin-App"/".\/public"/g' ./config/module.json
+RUN sed -i '/"devServerHost":/d' ./config/module.json
+RUN sed -i ':a;N;$!ba;s/,\n}/\n}/' ./config/module.json
+
+ENV NODE_ENV production
+RUN yarn build && \
+  rm -rf ./public/types && \
+  cp -rf ./public/* ./dist/ && \
+  tar xOf ./public/pbc${MODULE}-dts.tgz 
+
+WORKDIR /home/app/${MODULE}/dist
+
+FROM node:20-alpine
+
+ARG MODULE
+ENV MODULE=${MODULE:-App}
+
+ARG PORT
+ENV PORT=${PORT}
+
+RUN apk --no-cache add curl
+WORKDIR /home/app/${MODULE}
+COPY --from=builder /home/app/${MODULE}/dist /home/app/${MODULE}
+RUN npm install --global serve
+EXPOSE ${PORT}
+
+CMD ["serve"]

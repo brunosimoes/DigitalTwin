@@ -1,0 +1,29 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
+
+ARG MODULE
+ENV MODULE=${MODULE}
+
+WORKDIR /src
+COPY ./Digital-Twin-Capabilities/Digital-Twin-${MODULE}/ .
+
+WORKDIR /src/DigitalTwinService
+RUN dotnet build "DigitalTwinService.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "DigitalTwinService.csproj" -c Release -o /app/publish -r linux-musl-x64 --self-contained true /p:PublishTrimmed=false
+
+FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine AS final
+
+ARG MODULE
+ENV MODULE=${MODULE}
+ARG CODENAME
+ENV CODENAME=${CODENAME}
+
+WORKDIR /home/app/${MODULE}
+COPY --from=publish /app/publish .
+COPY ./Digital-Twin-Apps/${CODENAME}/config/gateway-settings.json /home/app/${MODULE}/appsettings.json
+COPY ./Digital-Twin-Capabilities/Digital-Twin-${MODULE}/DigitalTwinService/index.html /home/app/${MODULE}/index.html
+
+EXPOSE 8088
+
+ENTRYPOINT ["./DigitalTwinService"]

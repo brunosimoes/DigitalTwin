@@ -1,0 +1,33 @@
+{
+  "id": "keycloak",
+  "type": "otherservice",
+  "label": "Security",
+  "rootDir": "./Digital-Twin-Keycloak",
+  "enableProxy": true,
+  "proxyPath": "/auth",
+  "routeLandingPage": "/",
+  "dockerHealthCheck": true,
+  "dockerVolumes": [
+    {
+      "source": "postgres_data",
+      "target": "/var/lib/postgresql/data",
+      "create": true
+    },
+    {
+      "source": "keycloak_data",
+      "target": "/opt/jboss/keycloak/standalone/data/",
+      "create": true
+    }
+  ],
+  "dockerContainer": "digital-twin-keycloak",
+  "servicesMap": {
+    "group": "trustworthiness"
+  },
+  "devServerPort": 8080,
+  "config": {
+    "KEYCLOAK_CLIENT_ID": "dtx-frontend",
+    "KEYCLOAK_SERVER_URL": "http://localhost/auth",
+    "KEYCLOAK_REALM": "Digital-Twin",
+    "KEYCLOAK_CLIENT_SECRET": "tnAkxfdzfG2H6LQfzTQRIy6JQol1RU0Z"
+  }
+}

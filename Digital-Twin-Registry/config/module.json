@@ -1,0 +1,76 @@
+{
+  "id": "pbcRegistry",
+  "type": "microfrontend",
+  "label": "Registry",
+  "rootDir": "./Digital-Twin-Registry",
+  "enableProxy": true,
+  "proxyPath": "/registry",
+  "dockerContainer": "digital-twin-registry",
+  "dockerImage": "Dockerfile",
+  "dockerEnvironment": {
+    "SERVER_PORT_BINDING": "${PORT}",
+    "GIT_REPOSITORIES_PATH": "/srv/git",
+    "REPOSITORIES_HOME_LINK": "/srv/git"
+  },
+  "dockerPorts": { 
+    "2222": "22" 
+  },
+  "dockerVolumes": [
+    {
+      "source": "config",
+      "target": "/srv/Digital-Twin-Registry/registry/config",
+      "create": true
+    },
+    {
+      "source": "/var/run/docker.sock",
+      "target": "/var/run/docker.sock",
+      "create": false
+    },
+    {
+      "source": "../../Digital-Twin-Capabilities",
+      "target": "/srv/git-2",
+      "create": false
+    },
+    {
+      "source": "./ssh-keys/id_rsa",
+      "target": "/home/git/.ssh/authorized_keys",
+      "create": false
+    },
+    {
+      "source": "../../Digital-Twin-Apps",
+      "target": "/srv/Digital-Twin-Apps:ro",
+      "create": false
+    },
+    {
+      "source": "../../Digital-Twin-Capabilities",
+      "target": "/srv/Digital-Twin-Capabilities",
+      "create": false
+    },
+    {
+      "source": "../../Digital-Twin-Plugins",
+      "target": "/srv/Digital-Twin-Plugins",
+      "create": false
+    }
+  ],
+  "documentation": "DIGITAL_TWIN_REGISTRY.md",
+  "servicesMap": {
+    "upstream": [
+      "pbcServices"
+    ],
+    "group": "data-services"
+  },
+  "pathTemplate": "./src/index.html",
+  "routeCapabilities": "/remote.js",
+  "pathTypescript": "public/types",
+  "pathPublicAssets": [],
+  "exposes": {
+    "./Registry": "./src/types/RegistryDefinition.tsx",
+    "./RegistryEditor": "./src/components/registry/RegistryEditor.tsx",
+    "./RegistryGraph": "./src/components/map/RegistryGraph.tsx",
+    "./AppWithRegistry": "./src/components/AppWithRegistry.tsx"
+  },
+  "config": {
+    "enableAdminConsole": true
+  },
+  "devServerPort": 8061
+}

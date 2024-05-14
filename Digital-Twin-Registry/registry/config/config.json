@@ -1,0 +1,1328 @@
+{
+  "keycloak": {
+    "id": "keycloak",
+    "type": "otherservice",
+    "label": "Security",
+    "rootDir": "./Digital-Twin-Keycloak",
+    "enableProxy": true,
+    "proxyPath": "/auth",
+    "routeLandingPage": "/",
+    "dockerHealthCheck": true,
+    "dockerVolumes": [
+      {
+        "source": "postgres_data",
+        "target": "/var/lib/postgresql/data",
+        "create": true
+      },
+      {
+        "source": "keycloak_data",
+        "target": "/opt/jboss/keycloak/standalone/data/",
+        "create": true
+      }
+    ],
+    "dockerContainer": "digital-twin-keycloak",
+    "servicesMap": {
+      "group": "trustworthiness"
+    },
+    "devServerPort": 8080,
+    "config": {
+      "url": "http://localhost/auth",
+      "realm": "Digital-Twin",
+      "clientId": "dtx-frontend"
+    },
+    "url": "http://localhost/auth",
+    "licenses": []
+  },
+  "proxy": {
+    "id": "proxy",
+    "type": "otherservice",
+    "label": "Digital Twin Proxy",
+    "rootDir": "./Digital-Twin-Proxy",
+    "enableProxy": false,
+    "proxyPath": "",
+    "dockerContainer": "digital-twin-proxy",
+    "dockerHealthCheck": false,
+    "dockerVolumes": [
+      {
+        "source": "./proxy.conf",
+        "target": "/etc/nginx/conf.d/default.conf",
+        "create": false
+      }
+    ],
+    "documentation": "DIGITAL_TWIN_PROXY.md",
+    "servicesMap": {
+      "group": "trustworthiness"
+    },
+    "devServerPort": 80,
+    "url": "http://localhost",
+    "licenses": []
+  },
+  "pbcRegistry": {
+    "id": "pbcRegistry",
+    "type": "microfrontend",
+    "label": "Registry",
+    "rootDir": "./Digital-Twin-Registry",
+    "enableProxy": true,
+    "proxyPath": "/registry",
+    "dockerContainer": "digital-twin-registry",
+    "dockerImage": "Dockerfile",
+    "dockerEnvironment": {
+      "SERVER_PORT_BINDING": "${PORT}"
+    },
+    "dockerPorts": {
+      "2222": "2222"
+    },
+    "dockerVolumes": [
+      {
+        "source": "config",
+        "target": "/srv/Digital-Twin-Registry/registry/config",
+        "create": true
+      },
+      {
+        "source": "/var/run/docker.sock",
+        "target": "/var/run/docker.sock",
+        "create": false
+      },
+      {
+        "source": "../../Digital-Twin-Capabilities",
+        "target": "/srv/git",
+        "create": false
+      },
+      {
+        "source": "./ssh-keys/id_rsa",
+        "target": "/home/git/.ssh/authorized_keys",
+        "create": false
+      },
+      {
+        "source": "../../Digital-Twin-Apps",
+        "target": "/srv/Digital-Twin-Apps:ro",
+        "create": false
+      },
+      {
+        "source": "../../Digital-Twin-Capabilities",
+        "target": "/srv/Digital-Twin-Capabilities",
+        "create": false
+      },
+      {
+        "source": "../../Digital-Twin-Plugins",
+        "target": "/srv/Digital-Twin-Plugins",
+        "create": false
+      }
+    ],
+    "documentation": "DIGITAL_TWIN_REGISTRY.md",
+    "servicesMap": {
+      "upstream": [
+        "pbcServices"
+      ],
+      "group": "data-services"
+    },
+    "pathTemplate": "./src/index.html",
+    "routeCapabilities": "/remote.js",
+    "pathTypescript": "public/types",
+    "pathPublicAssets": [],
+    "exposes": {
+      "./Registry": "./src/types/RegistryDefinition.tsx",
+      "./RegistryEditor": "./src/components/registry/RegistryEditor.tsx",
+      "./RegistryGraph": "./src/components/map/RegistryGraph.tsx",
+      "./AppWithRegistry": "./src/components/AppWithRegistry.tsx"
+    },
+    "config": {
+      "enableAdminConsole": true
+    },
+    "devServerPort": 8061,
+    "version": "1.0.0",
+    "remote": "http://localhost/registry/remote.js",
+    "url": "http://localhost/registry"
+  },
+  "pbcDataArchitect": {
+    "id": "pbcDataArchitect",
+    "type": "otherservice",
+    "label": "Data Architect",
+    "rootDir": "./Digital-Twin-DataArchitect",
+    "enableProxy": true,
+    "proxyPath": "/data-architect",
+    "routeCapabilities": "",
+    "dockerHealthCheck": true,
+    "dockerContainer": "digital-twin-data-architect",
+    "dockerVolumes": [
+      {
+        "source": "node_data",
+        "target": "/data",
+        "create": true
+      }
+    ],
+    "dockerPorts": {
+      "1880": "1880"
+    },
+    "microservices": {
+      "node": {
+        "name": "NodeRED"
+      }
+    },
+    "servicesMap": {
+      "upstream": [
+        "pbcServices"
+      ],
+      "group": "integration"
+    },
+    "devServerPort": 1880,
+    "url": "http://localhost/data-architect",
+    "licenses": []
+  },
+  "pbcDataRepository": {
+    "id": "pbcDataRepository",
+    "type": "microservice",
+    "label": "Data Repository",
+    "rootDir": "./Digital-Twin-DataStore",
+    "enableProxy": true,
+    "proxyPath": "/data",
+    "dockerHealthCheckEndpoint": "/version",
+    "dockerContainer": "digital-twin-data-store",
+    "dockerImage": "Dockerfile.NodeJs",
+    "dockerVolumes": [
+      {
+        "source": "files_data",
+        "target": "/home/app/DataStore/static",
+        "create": true
+      },
+      {
+        "source": "config",
+        "target": "/home/app/DataStore/registry:ro",
+        "create": false
+      }
+    ],
+    "routeCapabilities": "/catalogue",
+    "routeLandingPage": "/",
+    "devServerPort": 3000,
+    "documentation": "DIGITAL_TWIN_DATA_REPOSITORY.md",
+    "servicesMap": {
+      "upstream": [
+        "pbcDataArchitect",
+        "pbcGeometryAPI",
+        "pbcServices"
+      ],
+      "group": "data-services"
+    },
+    "version": "1.0.0",
+    "remote": "http://localhost/data/catalogue",
+    "url": "http://localhost/data",
+    "licenses": [
+      {
+        "library": "@apidevtools/json-schema-ref-parser@9.1.2",
+        "license": "MIT",
+        "author": "James Messinger",
+        "url": "https://github.com/APIDevTools/json-schema-ref-parser"
+      },
+      {
+        "library": "@apidevtools/openapi-schemas@2.1.0",
+        "license": "MIT",
+        "author": "James Messinger",
+        "url": "https://github.com/APIDevTools/openapi-schemas"
+      },
+      {
+        "library": "@apidevtools/swagger-methods@3.0.2",
+        "license": "MIT",
+        "author": "James Messinger",
+        "url": "https://github.com/APIDevTools/swagger-methods"
+      },
+      {
+        "library": "@apidevtools/swagger-parser@10.0.3",
+        "license": "MIT",
+        "author": "James Messinger",
+        "url": "https://github.com/APIDevTools/swagger-parser"
+      },
+      {
+        "library": "@jsdevtools/ono@7.1.3",
+        "license": "MIT",
+        "author": "James Messinger",
+        "url": "https://github.com/JS-DevTools/ono"
+      },
+      {
+        "library": "@types/json-schema@7.0.15",
+        "license": "MIT",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+      },
+      {
+        "library": "accepts@1.3.8",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/accepts"
+      },
+      {
+        "library": "append-field@1.0.0",
+        "license": "MIT",
+        "author": "Linus Unnebäck",
+        "url": "https://github.com/LinusU/node-append-field"
+      },
+      {
+        "library": "argparse@2.0.1",
+        "license": "Python-2.0",
+        "url": "https://github.com/nodeca/argparse"
+      },
+      {
+        "library": "array-flatten@1.1.1",
+        "license": "MIT",
+        "author": "Blake Embrey",
+        "url": "https://github.com/blakeembrey/array-flatten"
+      },
+      {
+        "library": "b4a@1.6.6",
+        "license": "Apache-2.0",
+        "author": "Holepunch",
+        "url": "https://github.com/holepunchto/b4a"
+      },
+      {
+        "library": "balanced-match@1.0.2",
+        "license": "MIT",
+        "author": "Julian Gruber",
+        "url": "https://github.com/juliangruber/balanced-match"
+      },
+      {
+        "library": "bare-events@2.2.2",
+        "license": "Apache-2.0",
+        "author": "Holepunch",
+        "url": "https://github.com/holepunchto/bare-events"
+      },
+      {
+        "library": "bare-fs@2.3.0",
+        "license": "Apache-2.0",
+        "author": "Holepunch",
+        "url": "https://github.com/holepunchto/bare-fs"
+      },
+      {
+        "library": "bare-os@2.3.0",
+        "license": "Apache-2.0",
+        "author": "Holepunch",
+        "url": "https://github.com/holepunchto/bare-os"
+      },
+      {
+        "library": "bare-path@2.1.2",
+        "license": "Apache-2.0",
+        "author": "Holepunch",
+        "url": "https://github.com/holepunchto/bare-path"
+      },
+      {
+        "library": "bare-stream@1.0.0",
+        "license": "Apache-2.0",
+        "author": "Holepunch",
+        "url": "https://github.com/holepunchto/bare-stream"
+      },
+      {
+        "library": "base64-js@1.5.1",
+        "license": "MIT",
+        "author": "T. Jameson Little",
+        "url": "https://github.com/beatgammit/base64-js"
+      },
+      {
+        "library": "bl@4.1.0",
+        "license": "MIT",
+        "url": "https://github.com/rvagg/bl"
+      },
+      {
+        "library": "body-parser@1.20.2",
+        "license": "MIT",
+        "url": "https://github.com/expressjs/body-parser"
+      },
+      {
+        "library": "brace-expansion@1.1.11",
+        "license": "MIT",
+        "author": "Julian Gruber",
+        "url": "https://github.com/juliangruber/brace-expansion"
+      },
+      {
+        "library": "buffer-from@1.1.2",
+        "license": "MIT",
+        "url": "https://github.com/LinusU/buffer-from"
+      },
+      {
+        "library": "buffer@5.7.1",
+        "license": "MIT",
+        "author": "Feross Aboukhadijeh",
+        "url": "https://github.com/feross/buffer"
+      },
+      {
+        "library": "busboy@1.6.0",
+        "license": "MIT",
+        "author": "Brian White",
+        "url": "https://github.com/mscdex/busboy"
+      },
+      {
+        "library": "bytes@3.1.2",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/visionmedia/bytes.js"
+      },
+      {
+        "library": "call-bind@1.0.7",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/ljharb/call-bind"
+      },
+      {
+        "library": "call-me-maybe@1.0.2",
+        "license": "MIT",
+        "author": "Eric McCarthy",
+        "url": "https://github.com/limulus/call-me-maybe"
+      },
+      {
+        "library": "chownr@1.1.4",
+        "license": "ISC",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/isaacs/chownr"
+      },
+      {
+        "library": "color-convert@2.0.1",
+        "license": "MIT",
+        "author": "Heather Arthur",
+        "url": "https://github.com/Qix-/color-convert"
+      },
+      {
+        "library": "color-name@1.1.4",
+        "license": "MIT",
+        "author": "DY",
+        "url": "https://github.com/colorjs/color-name"
+      },
+      {
+        "library": "color-string@1.9.1",
+        "license": "MIT",
+        "author": "Heather Arthur",
+        "url": "https://github.com/Qix-/color-string"
+      },
+      {
+        "library": "color@4.2.3",
+        "license": "MIT",
+        "url": "https://github.com/Qix-/color"
+      },
+      {
+        "library": "commander@10.0.1",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/tj/commander.js"
+      },
+      {
+        "library": "commander@6.2.0",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/tj/commander.js"
+      },
+      {
+        "library": "concat-map@0.0.1",
+        "license": "MIT",
+        "author": "James Halliday",
+        "url": "https://github.com/substack/node-concat-map"
+      },
+      {
+        "library": "concat-stream@1.6.2",
+        "license": "MIT",
+        "author": "Max Ogden",
+        "url": "https://github.com/maxogden/concat-stream"
+      },
+      {
+        "library": "content-disposition@0.5.4",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/jshttp/content-disposition"
+      },
+      {
+        "library": "content-type@1.0.5",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/jshttp/content-type"
+      },
+      {
+        "library": "cookie-signature@1.0.6",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/visionmedia/node-cookie-signature"
+      },
+      {
+        "library": "cookie@0.6.0",
+        "license": "MIT",
+        "author": "Roman Shtylman",
+        "url": "https://github.com/jshttp/cookie"
+      },
+      {
+        "library": "core-util-is@1.0.3",
+        "license": "MIT",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/isaacs/core-util-is"
+      },
+      {
+        "library": "cors@2.8.5",
+        "license": "MIT",
+        "author": "Troy Goode",
+        "url": "https://github.com/expressjs/cors"
+      },
+      {
+        "library": "debug@2.6.9",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/visionmedia/debug"
+      },
+      {
+        "library": "decompress-response@6.0.0",
+        "license": "MIT",
+        "author": "Sindre Sorhus",
+        "url": "https://github.com/sindresorhus/decompress-response"
+      },
+      {
+        "library": "deep-extend@0.6.0",
+        "license": "MIT",
+        "author": "Viacheslav Lotsmanov",
+        "url": "https://github.com/unclechu/node-deep-extend"
+      },
+      {
+        "library": "define-data-property@1.1.4",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/ljharb/define-data-property"
+      },
+      {
+        "library": "depd@2.0.0",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/dougwilson/nodejs-depd"
+      },
+      {
+        "library": "destroy@1.2.0",
+        "license": "MIT",
+        "author": "Jonathan Ong",
+        "url": "https://github.com/stream-utils/destroy"
+      },
+      {
+        "library": "detect-libc@2.0.3",
+        "license": "Apache-2.0",
+        "author": "Lovell Fuller",
+        "url": "https://github.com/lovell/detect-libc"
+      },
+      {
+        "library": "digital_twin_data_repository@1.0.0",
+        "license": "MIT",
+        "author": "Bruno Simões"
+      },
+      {
+        "library": "doctrine@3.0.0",
+        "license": "Apache-2.0",
+        "url": "https://github.com/eslint/doctrine"
+      },
+      {
+        "library": "ee-first@1.1.1",
+        "license": "MIT",
+        "author": "Jonathan Ong",
+        "url": "https://github.com/jonathanong/ee-first"
+      },
+      {
+        "library": "encodeurl@1.0.2",
+        "license": "MIT",
+        "url": "https://github.com/pillarjs/encodeurl"
+      },
+      {
+        "library": "end-of-stream@1.4.4",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/end-of-stream"
+      },
+      {
+        "library": "es-define-property@1.0.0",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/ljharb/es-define-property"
+      },
+      {
+        "library": "es-errors@1.3.0",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/ljharb/es-errors"
+      },
+      {
+        "library": "escape-html@1.0.3",
+        "license": "MIT",
+        "url": "https://github.com/component/escape-html"
+      },
+      {
+        "library": "esutils@2.0.3",
+        "license": "BSD-2-Clause",
+        "url": "https://github.com/estools/esutils"
+      },
+      {
+        "library": "etag@1.8.1",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/etag"
+      },
+      {
+        "library": "expand-template@2.0.3",
+        "license": "(MIT OR WTFPL)",
+        "author": "LM",
+        "url": "https://github.com/ralphtheninja/expand-template"
+      },
+      {
+        "library": "express@4.19.2",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/expressjs/express"
+      },
+      {
+        "library": "fast-fifo@1.3.2",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/fast-fifo"
+      },
+      {
+        "library": "finalhandler@1.2.0",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/pillarjs/finalhandler"
+      },
+      {
+        "library": "forwarded@0.2.0",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/forwarded"
+      },
+      {
+        "library": "fresh@0.5.2",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/jshttp/fresh"
+      },
+      {
+        "library": "fs-constants@1.0.0",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/fs-constants"
+      },
+      {
+        "library": "fs.realpath@1.0.0",
+        "license": "ISC",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/isaacs/fs.realpath"
+      },
+      {
+        "library": "function-bind@1.1.2",
+        "license": "MIT",
+        "author": "Raynos",
+        "url": "https://github.com/Raynos/function-bind"
+      },
+      {
+        "library": "get-intrinsic@1.2.4",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/ljharb/get-intrinsic"
+      },
+      {
+        "library": "github-from-package@0.0.0",
+        "license": "MIT",
+        "author": "James Halliday",
+        "url": "https://github.com/substack/github-from-package"
+      },
+      {
+        "library": "glob@7.1.6",
+        "license": "ISC",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/isaacs/node-glob"
+      },
+      {
+        "library": "gopd@1.0.1",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/ljharb/gopd"
+      },
+      {
+        "library": "has-property-descriptors@1.0.2",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/inspect-js/has-property-descriptors"
+      },
+      {
+        "library": "has-proto@1.0.3",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/inspect-js/has-proto"
+      },
+      {
+        "library": "has-symbols@1.0.3",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/inspect-js/has-symbols"
+      },
+      {
+        "library": "hasown@2.0.2",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/inspect-js/hasOwn"
+      },
+      {
+        "library": "http-errors@2.0.0",
+        "license": "MIT",
+        "author": "Jonathan Ong",
+        "url": "https://github.com/jshttp/http-errors"
+      },
+      {
+        "library": "iconv-lite@0.4.24",
+        "license": "MIT",
+        "author": "Alexander Shtuchkin",
+        "url": "https://github.com/ashtuchkin/iconv-lite"
+      },
+      {
+        "library": "ieee754@1.2.1",
+        "license": "BSD-3-Clause",
+        "author": "Feross Aboukhadijeh",
+        "url": "https://github.com/feross/ieee754"
+      },
+      {
+        "library": "inflight@1.0.6",
+        "license": "ISC",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/npm/inflight"
+      },
+      {
+        "library": "inherits@2.0.4",
+        "license": "ISC",
+        "url": "https://github.com/isaacs/inherits"
+      },
+      {
+        "library": "ini@1.3.8",
+        "license": "ISC",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/isaacs/ini"
+      },
+      {
+        "library": "ipaddr.js@1.9.1",
+        "license": "MIT",
+        "author": "whitequark",
+        "url": "https://github.com/whitequark/ipaddr.js"
+      },
+      {
+        "library": "is-arrayish@0.3.2",
+        "license": "MIT",
+        "author": "Qix",
+        "url": "https://github.com/qix-/node-is-arrayish"
+      },
+      {
+        "library": "isarray@1.0.0",
+        "license": "MIT",
+        "author": "Julian Gruber",
+        "url": "https://github.com/juliangruber/isarray"
+      },
+      {
+        "library": "js-yaml@4.1.0",
+        "license": "MIT",
+        "author": "Vladimir Zapparov",
+        "url": "https://github.com/nodeca/js-yaml"
+      },
+      {
+        "library": "lodash.get@4.4.2",
+        "license": "MIT",
+        "author": "John-David Dalton",
+        "url": "https://github.com/lodash/lodash"
+      },
+      {
+        "library": "lodash.isequal@4.5.0",
+        "license": "MIT",
+        "author": "John-David Dalton",
+        "url": "https://github.com/lodash/lodash"
+      },
+      {
+        "library": "lodash.mergewith@4.6.2",
+        "license": "MIT",
+        "author": "John-David Dalton",
+        "url": "https://github.com/lodash/lodash"
+      },
+      {
+        "library": "media-typer@0.3.0",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/jshttp/media-typer"
+      },
+      {
+        "library": "merge-descriptors@1.0.1",
+        "license": "MIT",
+        "author": "Jonathan Ong",
+        "url": "https://github.com/component/merge-descriptors"
+      },
+      {
+        "library": "methods@1.1.2",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/methods"
+      },
+      {
+        "library": "mime-db@1.52.0",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/mime-db"
+      },
+      {
+        "library": "mime-types@2.1.35",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/mime-types"
+      },
+      {
+        "library": "mime@1.6.0",
+        "license": "MIT",
+        "author": "Robert Kieffer",
+        "url": "https://github.com/broofa/node-mime"
+      },
+      {
+        "library": "mimic-response@3.1.0",
+        "license": "MIT",
+        "author": "Sindre Sorhus",
+        "url": "https://github.com/sindresorhus/mimic-response"
+      },
+      {
+        "library": "minimatch@3.1.2",
+        "license": "ISC",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/isaacs/minimatch"
+      },
+      {
+        "library": "minimist@1.2.8",
+        "license": "MIT",
+        "author": "James Halliday",
+        "url": "https://github.com/minimistjs/minimist"
+      },
+      {
+        "library": "mkdirp-classic@0.5.3",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/mkdirp-classic"
+      },
+      {
+        "library": "mkdirp@0.5.6",
+        "license": "MIT",
+        "author": "James Halliday",
+        "url": "https://github.com/substack/node-mkdirp"
+      },
+      {
+        "library": "ms@2.0.0",
+        "license": "MIT",
+        "url": "https://github.com/zeit/ms"
+      },
+      {
+        "library": "ms@2.1.3",
+        "license": "MIT",
+        "url": "https://github.com/vercel/ms"
+      },
+      {
+        "library": "multer@1.4.5-lts.1",
+        "license": "MIT",
+        "url": "https://github.com/expressjs/multer"
+      },
+      {
+        "library": "napi-build-utils@1.0.2",
+        "license": "MIT",
+        "author": "Jim Schlight",
+        "url": "https://github.com/inspiredware/napi-build-utils"
+      },
+      {
+        "library": "negotiator@0.6.3",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/negotiator"
+      },
+      {
+        "library": "node-abi@3.62.0",
+        "license": "MIT",
+        "author": "Lukas Geiger",
+        "url": "https://github.com/electron/node-abi"
+      },
+      {
+        "library": "node-addon-api@6.1.0",
+        "license": "MIT",
+        "url": "https://github.com/nodejs/node-addon-api"
+      },
+      {
+        "library": "object-assign@4.1.1",
+        "license": "MIT",
+        "author": "Sindre Sorhus",
+        "url": "https://github.com/sindresorhus/object-assign"
+      },
+      {
+        "library": "object-inspect@1.13.1",
+        "license": "MIT",
+        "author": "James Halliday",
+        "url": "https://github.com/inspect-js/object-inspect"
+      },
+      {
+        "library": "on-finished@2.4.1",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/on-finished"
+      },
+      {
+        "library": "once@1.4.0",
+        "license": "ISC",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/isaacs/once"
+      },
+      {
+        "library": "parseurl@1.3.3",
+        "license": "MIT",
+        "url": "https://github.com/pillarjs/parseurl"
+      },
+      {
+        "library": "path-is-absolute@1.0.1",
+        "license": "MIT",
+        "author": "Sindre Sorhus",
+        "url": "https://github.com/sindresorhus/path-is-absolute"
+      },
+      {
+        "library": "path-to-regexp@0.1.7",
+        "license": "MIT",
+        "url": "https://github.com/component/path-to-regexp"
+      },
+      {
+        "library": "prebuild-install@7.1.2",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/prebuild/prebuild-install"
+      },
+      {
+        "library": "process-nextick-args@2.0.1",
+        "license": "MIT",
+        "url": "https://github.com/calvinmetcalf/process-nextick-args"
+      },
+      {
+        "library": "proxy-addr@2.0.7",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/jshttp/proxy-addr"
+      },
+      {
+        "library": "pump@3.0.0",
+        "license": "MIT",
+        "author": "Mathias Buus Madsen",
+        "url": "https://github.com/mafintosh/pump"
+      },
+      {
+        "library": "qs@6.11.0",
+        "license": "BSD-3-Clause",
+        "url": "https://github.com/ljharb/qs"
+      },
+      {
+        "library": "queue-tick@1.0.1",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/queue-tick"
+      },
+      {
+        "library": "range-parser@1.2.1",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/jshttp/range-parser"
+      },
+      {
+        "library": "raw-body@2.5.2",
+        "license": "MIT",
+        "author": "Jonathan Ong",
+        "url": "https://github.com/stream-utils/raw-body"
+      },
+      {
+        "library": "rc@1.2.8",
+        "license": "(BSD-2-Clause OR MIT OR Apache-2.0)",
+        "author": "Dominic Tarr",
+        "url": "https://github.com/dominictarr/rc"
+      },
+      {
+        "library": "readable-stream@2.3.8",
+        "license": "MIT",
+        "url": "https://github.com/nodejs/readable-stream"
+      },
+      {
+        "library": "readable-stream@3.6.2",
+        "license": "MIT",
+        "url": "https://github.com/nodejs/readable-stream"
+      },
+      {
+        "library": "safe-buffer@5.1.2",
+        "license": "MIT",
+        "author": "Feross Aboukhadijeh",
+        "url": "https://github.com/feross/safe-buffer"
+      },
+      {
+        "library": "safe-buffer@5.2.1",
+        "license": "MIT",
+        "author": "Feross Aboukhadijeh",
+        "url": "https://github.com/feross/safe-buffer"
+      },
+      {
+        "library": "safer-buffer@2.1.2",
+        "license": "MIT",
+        "author": "Nikita Skovoroda",
+        "url": "https://github.com/ChALkeR/safer-buffer"
+      },
+      {
+        "library": "semver@7.6.2",
+        "license": "ISC",
+        "author": "GitHub Inc.",
+        "url": "https://github.com/npm/node-semver"
+      },
+      {
+        "library": "send@0.18.0",
+        "license": "MIT",
+        "author": "TJ Holowaychuk",
+        "url": "https://github.com/pillarjs/send"
+      },
+      {
+        "library": "serve-static@1.15.0",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/expressjs/serve-static"
+      },
+      {
+        "library": "set-function-length@1.2.2",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/ljharb/set-function-length"
+      },
+      {
+        "library": "setprototypeof@1.2.0",
+        "license": "ISC",
+        "author": "Wes Todd",
+        "url": "https://github.com/wesleytodd/setprototypeof"
+      },
+      {
+        "library": "sharp@0.32.6",
+        "license": "Apache-2.0",
+        "author": "Lovell Fuller",
+        "url": "https://github.com/lovell/sharp"
+      },
+      {
+        "library": "side-channel@1.0.6",
+        "license": "MIT",
+        "author": "Jordan Harband",
+        "url": "https://github.com/ljharb/side-channel"
+      },
+      {
+        "library": "simple-concat@1.0.1",
+        "license": "MIT",
+        "author": "Feross Aboukhadijeh",
+        "url": "https://github.com/feross/simple-concat"
+      },
+      {
+        "library": "simple-get@4.0.1",
+        "license": "MIT",
+        "author": "Feross Aboukhadijeh",
+        "url": "https://github.com/feross/simple-get"
+      },
+      {
+        "library": "simple-swizzle@0.2.2",
+        "license": "MIT",
+        "author": "Qix",
+        "url": "https://github.com/qix-/node-simple-swizzle"
+      },
+      {
+        "library": "statuses@2.0.1",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/statuses"
+      },
+      {
+        "library": "streamsearch@1.1.0",
+        "license": "MIT",
+        "author": "Brian White",
+        "url": "https://github.com/mscdex/streamsearch"
+      },
+      {
+        "library": "streamx@2.16.1",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/streamx"
+      },
+      {
+        "library": "string_decoder@1.1.1",
+        "license": "MIT",
+        "url": "https://github.com/nodejs/string_decoder"
+      },
+      {
+        "library": "string_decoder@1.3.0",
+        "license": "MIT",
+        "url": "https://github.com/nodejs/string_decoder"
+      },
+      {
+        "library": "strip-json-comments@2.0.1",
+        "license": "MIT",
+        "author": "Sindre Sorhus",
+        "url": "https://github.com/sindresorhus/strip-json-comments"
+      },
+      {
+        "library": "swagger-jsdoc@6.2.8",
+        "license": "MIT",
+        "author": "https://github.com/Surnet/swagger-jsdoc/graphs/contributors",
+        "url": "https://github.com/Surnet/swagger-jsdoc"
+      },
+      {
+        "library": "swagger-parser@10.0.3",
+        "license": "MIT",
+        "author": "James Messinger",
+        "url": "https://github.com/APIDevTools/swagger-parser"
+      },
+      {
+        "library": "swagger-ui-dist@5.17.10",
+        "license": "Apache-2.0",
+        "url": "https://github.com/swagger-api/swagger-ui"
+      },
+      {
+        "library": "swagger-ui-express@5.0.0",
+        "license": "MIT",
+        "author": "Stephen Scott",
+        "url": "https://github.com/scottie1984/swagger-ui-express"
+      },
+      {
+        "library": "tar-fs@2.1.1",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/tar-fs"
+      },
+      {
+        "library": "tar-fs@3.0.6",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/tar-fs"
+      },
+      {
+        "library": "tar-stream@2.2.0",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/tar-stream"
+      },
+      {
+        "library": "tar-stream@3.1.7",
+        "license": "MIT",
+        "author": "Mathias Buus",
+        "url": "https://github.com/mafintosh/tar-stream"
+      },
+      {
+        "library": "toidentifier@1.0.1",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/component/toidentifier"
+      },
+      {
+        "library": "tunnel-agent@0.6.0",
+        "license": "Apache-2.0",
+        "author": "Mikeal Rogers",
+        "url": "https://github.com/mikeal/tunnel-agent"
+      },
+      {
+        "library": "type-is@1.6.18",
+        "license": "MIT",
+        "url": "https://github.com/jshttp/type-is"
+      },
+      {
+        "library": "typedarray@0.0.6",
+        "license": "MIT",
+        "author": "James Halliday",
+        "url": "https://github.com/substack/typedarray"
+      },
+      {
+        "library": "unpipe@1.0.0",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/stream-utils/unpipe"
+      },
+      {
+        "library": "util-deprecate@1.0.2",
+        "license": "MIT",
+        "author": "Nathan Rajlich",
+        "url": "https://github.com/TooTallNate/util-deprecate"
+      },
+      {
+        "library": "utils-merge@1.0.1",
+        "license": "MIT",
+        "author": "Jared Hanson",
+        "url": "https://github.com/jaredhanson/utils-merge"
+      },
+      {
+        "library": "validator@13.12.0",
+        "license": "MIT",
+        "author": "Chris O'Hara",
+        "url": "https://github.com/validatorjs/validator.js"
+      },
+      {
+        "library": "vary@1.1.2",
+        "license": "MIT",
+        "author": "Douglas Christopher Wilson",
+        "url": "https://github.com/jshttp/vary"
+      },
+      {
+        "library": "wrappy@1.0.2",
+        "license": "ISC",
+        "author": "Isaac Z. Schlueter",
+        "url": "https://github.com/npm/wrappy"
+      },
+      {
+        "library": "xtend@4.0.2",
+        "license": "MIT",
+        "author": "Raynos",
+        "url": "https://github.com/Raynos/xtend"
+      },
+      {
+        "library": "yaml@2.0.0-1",
+        "license": "ISC",
+        "author": "Eemeli Aro",
+        "url": "https://github.com/eemeli/yaml"
+      },
+      {
+        "library": "z-schema@5.0.6",
+        "license": "MIT",
+        "url": "https://github.com/zaggino/z-schema"
+      }
+    ]
+  },
+  "pbcApp": {
+    "id": "pbcApp",
+    "type": "microfrontend",
+    "label": "Hello World",
+    "rootDir": "./Digital-Twin-Apps/HelloDigitalTwin",
+    "enableProxy": true,
+    "proxyPath": "/",
+    "dockerImage": "Dockerfile.ReactApp",
+    "dockerContainer": "digital-twin",
+    "servicesMap": {
+      "upstream": [
+        "keycloak",
+        "proxy"
+      ],
+      "group": "apps"
+    },
+    "pathTemplate": "./src/index.html",
+    "routeCapabilities": "/remote.js",
+    "devServerPort": 8071,
+    "pathTypescript": "public/types",
+    "pathPublicAssets": [
+      ".",
+      "public"
+    ],
+    "remotes": [
+      "pbcRegistry"
+    ],
+    "exposes": {
+      "./App": "./src/App.tsx"
+    },
+    "about": {
+      "suite": "Digital Twin",
+      "name": "Hello World",
+      "copyright": "@ Bruno Simões",
+      "description": "Hello word for the creation of a Digital Twin.",
+      "headers": {
+        "firstLogo": "/static/logos/logo.svg"
+      },
+      "about": [
+        "pbcServices",
+        "pbcUX"
+      ]
+    },
+    "appManifest": {
+      "version": "1.0",
+      "entrypoint": "digital_twin:8071",
+      "dockerRegistry": "brunosimoes/digital-twin:",
+      "authenticationMethods": [
+        "email"
+      ],
+      "groups": [
+        {
+          "id": "data-services",
+          "label": "Micro-Services",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "style": {
+            "backgroundColor": "#52AFBE40",
+            "width": 300,
+            "height": 700
+          }
+        },
+        {
+          "id": "integration",
+          "label": "Integration",
+          "position": {
+            "x": 310,
+            "y": 0
+          },
+          "style": {
+            "backgroundColor": "#CCDC5840",
+            "width": 300,
+            "height": 700
+          }
+        },
+        {
+          "id": "intelligence",
+          "label": "Intelligence",
+          "position": {
+            "x": 620,
+            "y": 0
+          },
+          "style": {
+            "backgroundColor": "#CCDC5840",
+            "width": 300,
+            "height": 700
+          }
+        },
+        {
+          "id": "ux",
+          "label": "UX",
+          "position": {
+            "x": 930,
+            "y": 0
+          },
+          "style": {
+            "backgroundColor": "#CCDC5840",
+            "width": 300,
+            "height": 700
+          }
+        },
+        {
+          "id": "apps",
+          "label": "Digital Twins",
+          "position": {
+            "x": 1240,
+            "y": 0
+          },
+          "style": {
+            "backgroundColor": "#CCDC5840",
+            "width": 300,
+            "height": 700
+          }
+        },
+        {
+          "id": "trustworthiness",
+          "label": "Trustworthiness",
+          "position": {
+            "x": 1550,
+            "y": 0
+          },
+          "style": {
+            "backgroundColor": "#52AFBE40",
+            "width": 300,
+            "height": 700
+          }
+        }
+      ],
+      "modules": [
+        {
+          "id": "keycloak",
+          "build": false
+        },
+        {
+          "id": "proxy",
+          "build": false
+        },
+        {
+          "id": "pbcRegistry",
+          "build": true
+        },
+        {
+          "id": "pbcDataArchitect",
+          "build": true
+        },
+        {
+          "id": "pbcDataRepository",
+          "build": true
+        },
+        {
+          "id": "pbcApp",
+          "build": true
+        }
+      ],
+      "id": "HelloDigitalTwin"
+    },
+    "version": "21.05.2024/19.44.10",
+    "remote": "http://localhost/remote.js",
+    "url": "http://localhost/"
+  }
+}

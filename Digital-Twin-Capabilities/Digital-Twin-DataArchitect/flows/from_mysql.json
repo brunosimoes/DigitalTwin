@@ -1,0 +1,119 @@
+[
+  {
+    "id": "22a16be4abfb2653",
+    "type": "tab",
+    "label": "MySQL Flow",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "19707ee0c66485ab",
+    "type": "mysql",
+    "z": "22a16be4abfb2653",
+    "mydb": "acbb7b5e.8b6728",
+    "name": "",
+    "x": 580,
+    "y": 280,
+    "wires": [
+      [
+        "1fd68edaa6d490ba"
+      ]
+    ]
+  },
+  {
+    "id": "1fd68edaa6d490ba",
+    "type": "function",
+    "z": "22a16be4abfb2653",
+    "name": "Transform Data",
+    "func": "msg.payload = \"Modified result\" + JSON.stringify(msg.payload);\nreturn msg;",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 800,
+    "y": 280,
+    "wires": [
+      [
+        "aac1362c6bca7279",
+        "dbf0d08e01b88005"
+      ]
+    ]
+  },
+  {
+    "id": "aac1362c6bca7279",
+    "type": "http request",
+    "z": "22a16be4abfb2653",
+    "name": "",
+    "method": "POST",
+    "ret": "txt",
+    "paytoqs": "ignore",
+    "url": "http://digital-twin-proxy/registry/validate",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [],
+    "x": 1050,
+    "y": 380,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "dbf0d08e01b88005",
+    "type": "debug",
+    "z": "22a16be4abfb2653",
+    "name": "Debug",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1030,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "61b4c1a81e45f9e5",
+    "type": "inject",
+    "z": "22a16be4abfb2653",
+    "name": "",
+    "props": [
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "60",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "SELECT 1",
+    "x": 400,
+    "y": 280,
+    "wires": [
+      [
+        "19707ee0c66485ab"
+      ]
+    ]
+  },
+  {
+    "id": "acbb7b5e.8b6728",
+    "type": "MySQLdatabase",
+    "name": "MySQL Server",
+    "host": "192.168.100.111",
+    "port": "3306",
+    "db": "database",
+    "user": "user",
+    "password": "password",
+    "tz": "GMT",
+    "charset": "UTF8"
+  }
+]

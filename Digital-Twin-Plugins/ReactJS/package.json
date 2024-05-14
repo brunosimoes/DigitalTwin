@@ -1,0 +1,59 @@
+{
+  "name": "pbc_react_js",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "build:start": "cd dist && npx serve",
+    "start": "webpack serve --open --mode development",
+    "start:live": "webpack serve --open --mode development --live-reload --hot",
+    "lint": "eslint .",
+    "lint:fix": "prettier --log-level silent --write . && eslint --fix .",
+    "clean": "rimraf build/ node_modules/ public/ types/"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Bruno Simões"
+  },
+  "devDependencies": {
+    "eslint": "^9.3.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "@babel/core": "^7.24.6",
+    "@babel/plugin-transform-runtime": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "@babel/preset-react": "^7.24.6",
+    "@babel/preset-typescript": "^7.24.6",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "babel-loader": "^9.1.3",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "dts-loader": "^0.1.8",
+    "html-webpack-plugin": "^5.6.0",
+    "json-loader": "^0.5.7",
+    "postcss": "^8.4.38",
+    "postcss-loader": "^8.1.1",
+    "rimraf": "^5.0.7",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.3",
+    "tar-webpack-plugin": "^0.1.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4",
+    "webpack-remote-types-plugin": "^0.2.7"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.19",
+    "@mui/material": "^5.15.19",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "resolutions": {
+    "rimraf": "^5.0.7"
+  }
+}

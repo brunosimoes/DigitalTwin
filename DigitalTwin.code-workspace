@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "name": "DigitalTwin",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "[javascript]": {
+      "editor.formatOnSave": false
+    },
+    "[typescript]": {
+      "editor.formatOnSave": true
+    },
+    "editor.formatOnPaste": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": [
+      "javascript",
+      "typescript"
+    ],
+    "dotnet.defaultSolution": "disable",
+    "cSpell.words": [
+      "Microfrontend",
+      "otherservice"
+    ]
+  }
+}

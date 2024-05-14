@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+      - ./install.sh:/install.sh
+      - ./logs.txt:/install-logs.txt
+    command: --interval 900 --label=com.centurylinklabs.watchtower.lifecycle.post-update="/install.sh"

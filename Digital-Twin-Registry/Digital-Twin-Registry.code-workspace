@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "path": ".",
+    },
+  ],
+  "settings": {
+    // Prevent editor formatting on save for certain file types
+    "editor.formatOnSave": false,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "[javascript]": {
+      "editor.formatOnSave": false,
+    },
+    "[typescript]": {
+      "editor.formatOnSave": false,
+    },
+    // Configure eslint to report + fix errors for correct file types
+    "editor.formatOnPaste": false,
+    "eslint.validate": ["javascript", "typescript"],
+    "cSpell.words": [
+      "dockerode",
+      "frontends",
+      "Microfrontend",
+      "microfrontends",
+      "reactflow",
+      "Simões",
+      "tailwindcss",
+      "zustand",
+    ],
+  },
+}
